@@ -18,6 +18,11 @@ typedef struct No {
     int altura; // Altura do nó na árvore
 } No;
 
+// VARIÁVEIS GLOBAIS DE STATUS DO JOGADOR (MOVEMOS DO main() PARA AQUI)
+// Isto permite que a função desbloquearHabilidade modifique o status do jogador.
+int pontos_disponiveis = 12;
+int nivel_atual = 4;
+
 // --- Funções Auxiliares da AVL ---
 
 // Funcao para obter a altura de um nó
@@ -157,7 +162,10 @@ void inOrder(No *raiz) {
 }
 
 // Função de exemplo para 'desbloquear' uma habilidade no jogo
-void desbloquearHabilidade(No *raiz, int id_habilidade, int pontos_jogador, int nivel_jogador) {
+// Nota: Os argumentos pontos_jogador e nivel_jogador foram removidos, 
+// pois agora as variáveis globais 'pontos_disponiveis' e 'nivel_atual' serão usadas 
+// e modificadas diretamente.
+void desbloquearHabilidade(No *raiz, int id_habilidade) {
     No *skill_node = buscar(raiz, id_habilidade);
 
     if (skill_node == NULL) {
@@ -168,16 +176,22 @@ void desbloquearHabilidade(No *raiz, int id_habilidade, int pontos_jogador, int 
     Habilidade hab = skill_node->habilidade;
     printf("\n[LOG] Tentando desbloquear '%s'...\n", hab.nome);
 
-    if (pontos_jogador >= hab.custo_pontos && nivel_jogador >= hab.nivel_minimo) {
+    // Usa e modifica as variáveis globais
+    if (pontos_disponiveis >= hab.custo_pontos && nivel_atual >= hab.nivel_minimo) {
+        
+        // CORREÇÃO APLICADA: Decrementa os pontos do jogador!
+        pontos_disponiveis -= hab.custo_pontos; 
+        
         printf("[SUCESSO] Habilidade '%s' desbloqueada! (Custo: %d)\n", hab.nome, hab.custo_pontos);
-        // Em um jogo real, aqui você decrementaria os pontos do jogador e marcaria a habilidade como 'aprendida'
+        printf("[ATUALIZADO] Pontos restantes: %d\n", pontos_disponiveis);
+        
     } else {
         printf("[FALHA] Nao e possivel desbloquear '%s'.\n", hab.nome);
-        if (pontos_jogador < hab.custo_pontos) {
-            printf("  - Pontos insuficientes (Necessario: %d, Possui: %d)\n", hab.custo_pontos, pontos_jogador);
+        if (pontos_disponiveis < hab.custo_pontos) {
+            printf("  - Pontos insuficientes (Necessario: %d, Possui: %d)\n", hab.custo_pontos, pontos_disponiveis);
         }
-        if (nivel_jogador < hab.nivel_minimo) {
-            printf("  - Nivel do personagem muito baixo (Necessario: %d, Possui: %d)\n", hab.nivel_minimo, nivel_jogador);
+        if (nivel_atual < hab.nivel_minimo) {
+            printf("  - Nivel do personagem muito baixo (Necessario: %d, Possui: %d)\n", hab.nivel_minimo, nivel_atual);
         }
     }
 }
@@ -186,6 +200,10 @@ void desbloquearHabilidade(No *raiz, int id_habilidade, int pontos_jogador, int 
 // Funcao principal para demonstrar a aplicacao
 int main() {
     No *raiz = NULL;
+    int escolha_id;
+    char continuar;
+    
+    // As variáveis de status do jogador foram removidas daqui para serem globais (Linhas 27-28)
 
     printf("--- Simulacao da Arvore de Habilidades (Skill Tree) ---\n");
     printf("--- Estrutura de Dados: Arvore AVL ---\n\n");
@@ -196,6 +214,8 @@ int main() {
     Habilidade hab3 = {15, "Furia", 10, 5};
     Habilidade hab4 = {2, "Bloqueio Rapido", 2, 1};
     Habilidade hab5 = {7, "Curar Feridas", 8, 3};
+    Habilidade hab6 = {20, "Choque do trovao", 12, 6};
+    Habilidade hab7 = {12, "Lamina Flamejante", 9, 4};
 
     // Inserindo as habilidades. A AVL garante o balanceamento.
     raiz = inserir(raiz, hab1);
@@ -203,32 +223,55 @@ int main() {
     raiz = inserir(raiz, hab3);
     raiz = inserir(raiz, hab4);
     raiz = inserir(raiz, hab5);
+    raiz = inserir(raiz, hab6);
+    raiz = inserir(raiz, hab7);
 
     printf("1. Arvore de Habilidades (Inorder):\n");
     inOrder(raiz);
     printf("\n-------------------------------------------------\n");
 
-
-    // 2. Simulação de um jogador
-    int pontos_disponiveis = 12;
-    int nivel_atual = 4;
+    // 2. Status do Jogador: Agora usa as variáveis globais
     printf("2. Status do Jogador: Pontos de Habilidade: %d, Nivel Atual: %d\n", pontos_disponiveis, nivel_atual);
+    printf("-------------------------------------------------\n");
 
-    // 3. Testes de Busca e Desbloqueio (Aplicação)
-    desbloquearHabilidade(raiz, 10, pontos_disponiveis, nivel_atual); // ID 10: Sucesso
-    desbloquearHabilidade(raiz, 15, pontos_disponiveis, nivel_atual); // ID 15: Falha (Nível < 5)
-    desbloquearHabilidade(raiz, 20, pontos_disponiveis, nivel_atual); // ID 20: Não encontrada
+    // 3. Loop interativo para escolher e desbloquear habilidades
+    do {
+        printf("\n=> Digite o ID da Habilidade que deseja tentar desbloquear (0 para sair): ");
+        if (scanf("%d", &escolha_id) != 1) {
+            // Limpa o buffer em caso de entrada não numérica
+            while (getchar() != '\n');
+            printf("[ERRO] Entrada invalida. Tente novamente.\n");
+            continue;
+        }
 
-    // Demonstração de busca eficiente
+        if (escolha_id == 0) {
+            break; // Sai do loop
+        }
+
+        // Chama a função de desbloqueio (agora sem passar os pontos)
+        desbloquearHabilidade(raiz, escolha_id);
+
+        printf("\nStatus Atual: Pontos restantes: %d\n", pontos_disponiveis);
+        printf("Deseja tentar desbloquear outra habilidade? (s/n): ");
+        // Limpa o buffer de entrada após o scanf anterior
+        while (getchar() != '\n'); 
+        scanf(" %c", &continuar);
+
+    } while (continuar == 's' || continuar == 'S');
+
+
+    printf("\n-------------------------------------------------\n");
+
+    // Demonstração de busca eficiente (apenas para referência)
     No *busca_result = buscar(raiz, 7);
     if (busca_result != NULL) {
         printf("\n[BUSCA] Habilidade ID 7 encontrada: %s (Custo: %d)\n",
                busca_result->habilidade.nome, busca_result->habilidade.custo_pontos);
     }
-    printf("\n-------------------------------------------------\n");
+    printf("\n--- Simulacao encerrada. ---\n");
 
     // Limpeza de memória
-    // (Em um projeto completo, a função de remoção e liberação de memória seria implementada)
+    // (Em um projeto completo, a função de remoção e liberaçãode memória seria implementada)
 
     return 0;
 }
