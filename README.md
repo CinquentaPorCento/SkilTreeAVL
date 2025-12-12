@@ -1,3 +1,6 @@
+Aluno: Gabriel Pereira Cardoso Soares
+Estrutura de dados II
+
 Este repositório contém uma implementação em C de uma Árvore de Habilidades (Skill Tree) utilizando a estrutura de dados Árvore AVL. A AVL garante que as operações de busca e inserção sejam eficientes (O(logn)) através do auto-balanceamento automático dos nós.
 📝 Ordem de Inserção e Balanceamento
 
