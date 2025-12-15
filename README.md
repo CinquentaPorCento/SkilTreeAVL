@@ -2,7 +2,7 @@ Aluno: Gabriel Pereira Cardoso Soares
 Estrutura de dados II
 
 Este repositório contém uma implementação em C de uma Árvore de Habilidades (Skill Tree) utilizando a estrutura de dados Árvore AVL. A AVL garante que as operações de busca e inserção sejam eficientes (O(logn)) através do auto-balanceamento automático dos nós.
-📝 Ordem de Inserção e Balanceamento
+- Ordem de Inserção e Balanceamento
 
 Para demonstrar a capacidade de auto-balanceamento da AVL, as habilidades são inseridas em uma ordem que força a árvore a se reestruturar.
 1. Ordem de Inserção
@@ -17,10 +17,11 @@ A inserção da última habilidade, ID 1, causou um desbalanceamento do tipo Esq
 O algoritmo AVL detectou esse desequilíbrio e automaticamente executou uma Rotação Simples à Direita. Essa rotação reorganiza os nós para que a diferença de altura em qualquer ponto da árvore seja no máximo 1, garantindo a eficiência da Skill Tree.
 
 A função inOrder (listagem em ordem crescente de ID) é usada para confirmar o estado final e a altura de cada nó após o balanceamento.
-🧠 Como o Código Funciona
+- Como o Código Funciona
 
 O código é dividido em estruturas de dados (cabeçalho da árvore) e funções lógicas (operações da AVL e simulação de jogo).
-🏗️ Estruturas de Dados
+
+- Estruturas de Dados
 
     Habilidade: Define os dados da skill (ID, nome, custo e nível).
 
@@ -28,7 +29,7 @@ O código é dividido em estruturas de dados (cabeçalho da árvore) e funções
 
     Variáveis Globais (pontos_disponiveis, nivel_atual): Simulam o status mutável do jogador para que os pontos sejam debitados corretamente após um desbloqueio.
 
-🎯 Funções Principais
+- Funções Principais
 
     inserir(No *no, Habilidade hab):
 
